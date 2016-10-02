@@ -1,0 +1,29 @@
+security:
+    encoders:
+        AppBundle\Entity\User: bcrypt
+        Symfony\Component\Security\Core\User\User: bcrypt
+
+    providers:
+        chain_provider:
+            chain:
+                 providers: [in_memory, db_user]
+        db_user:
+                entity:
+                    { class: AppBundle:User, property: username }
+        in_memory:
+                    memory:
+                        users:
+                            admin: { password: admin, roles: 'ROLE_ADMIN', }
+
+        api_key_user_provider:
+                    id: api_key_user_provider
+
+    firewalls:
+
+            secured_area:
+                pattern:    ^/api
+                anonymous: true
+                stateless: true
+                simple_preauth:
+                            authenticator: apikey_authenticator
+                            provider: api_key_user_provider

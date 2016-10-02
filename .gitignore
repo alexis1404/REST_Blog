@@ -1,0 +1,29 @@
+/app/config/parameters.yml
+/build/
+/phpunit.xml
+/var/*
+!/var/cache
+/var/cache/*
+!var/cache/.gitkeep
+!/var/logs
+/var/logs/*
+!var/logs/.gitkeep
+!/var/sessions
+/var/sessions/*
+!var/sessions/.gitkeep
+!var/SymfonyRequirements.php
+/vendor/
+/web/bundles/
+/.idea
+Будет удалено .gitignore
+Будет удалено .idea/
+Будет удалено README.md
+Будет удалено app/
+Будет удалено bin/
+Будет удалено composer.json
+Будет удалено composer.lock
+Будет удалено phpunit.xml.dist
+Будет удалено src/
+Будет удалено tests/
+Будет удалено var/
+Будет удалено web/
