@@ -10,4 +10,28 @@ namespace AppBundle\Repository;
  */
 class CommentRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function saverObject($object)
+    {
+        $em = $this->getEntityManager();
+        $em->persist($object);
+        $em->flush();
+    }
+
+    public function removeObject($object)
+    {
+        $em = $this->getEntityManager();
+        $em->remove($object);
+        $em->flush();
+    }
+
+    public function getLimitOffsetComments($limit, $offset)
+    {
+
+        $query = $this->createQueryBuilder('p')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery();
+
+        return $query->getResult();
+    }
 }

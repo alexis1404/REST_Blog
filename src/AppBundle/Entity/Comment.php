@@ -36,10 +36,23 @@ class Comment
     private $textComment;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_create_comment", type="datetime")
+     */
+    private $date_create_comment;
+
+    /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="comments", cascade={"persist"})
      * @ORM\JoinColumn(name="user_comment", referencedColumnName="id")
      */
     private $user_comment;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Post", inversedBy="post_comment", cascade={"persist"})
+     * @ORM\JoinColumn(name="post_comment", referencedColumnName="id")
+     */
+    private $post_comment;
 
     /**
      * Get id
@@ -121,5 +134,53 @@ class Comment
     public function getUserComment()
     {
         return $this->user_comment;
+    }
+
+    /**
+     * Set postComment
+     *
+     * @param \AppBundle\Entity\Post $postComment
+     *
+     * @return Comment
+     */
+    public function setPostComment(\AppBundle\Entity\Post $postComment = null)
+    {
+        $this->post_comment = $postComment;
+
+        return $this;
+    }
+
+    /**
+     * Get postComment
+     *
+     * @return \AppBundle\Entity\Post
+     */
+    public function getPostComment()
+    {
+        return $this->post_comment;
+    }
+
+    /**
+     * Set dateCreateComment
+     *
+     * @param \DateTime $dateCreateComment
+     *
+     * @return Comment
+     */
+    public function setDateCreateComment($dateCreateComment)
+    {
+        $this->date_create_comment = $dateCreateComment;
+
+        return $this;
+    }
+
+    /**
+     * Get dateCreateComment
+     *
+     * @return \DateTime
+     */
+    public function getDateCreateComment()
+    {
+        return $this->date_create_comment;
     }
 }

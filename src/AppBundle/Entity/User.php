@@ -45,7 +45,7 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="apiKey", type="string", length=100)
+     * @ORM\Column(name="apiKey", type="string", length=100, nullable=true)
      */
     private $apiKey;
 
@@ -80,7 +80,7 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=50)
+     * @ORM\Column(name="password", type="string", length=100)
      */
     private $password;
 
@@ -399,6 +399,54 @@ class User implements UserInterface
 
         $this->addPost($post);
 
+    }
 
+    public function createNewComment($text_comment, $actual_user, $actual_post)
+    {
+        $comment = new Comment();
+
+        $comment->setAuthorComment($this->getUsername());
+        $comment->setTextComment($text_comment);
+        $comment->setDateCreateComment(new \DateTime('now'));
+        $comment->setPostComment($actual_post);
+        $comment->setUserComment($actual_user);
+
+        $this->addComment($comment);
+
+        return $comment;
+    }
+
+    public function userActivator()
+    {
+        $this->active = 1;
+    }
+
+    public function logout()
+    {
+        $this->apiKey = null;
+    }
+
+    /**
+     * Set role
+     *
+     * @param string $role
+     *
+     * @return User
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return string
+     */
+    public function getRole()
+    {
+        return $this->role;
     }
 }

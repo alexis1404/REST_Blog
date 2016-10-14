@@ -11,9 +11,18 @@ services:
             class:        AppBundle\Services\UserManager
             arguments: ["@service_container"]
 
+    post_manager:
+            class:  AppBundle\Services\PostManager
+            arguments: ["@service_container"]
+
+    comment_manager:
+            class: AppBundle\Services\CommentManager
+            arguments: ["@service_container"]
+
     my_mailer:
             class: AppBundle\Services\Mailer
             arguments: ["@service_container"]
+
     # security servises ( api_key_user_provider and apikey_authenticator)
     api_key_user_provider:
             class:        AppBundle\Security\ApiKeyUserProvider

@@ -3,14 +3,20 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
  *
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @UniqueEntity(fields="username", message="User name already taken!")
+ * @UniqueEntity(fields="email", message="Email already taken!")
+ *
  */
-class User
+class User implements UserInterface
 {
     /**
      * @var int
@@ -32,13 +38,14 @@ class User
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, unique=true)
+     * @Assert\Email()
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="apiKey", type="string", length=100)
+     * @ORM\Column(name="apiKey", type="string", length=100, nullable=true)
      */
     private $apiKey;
 
@@ -73,7 +80,7 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=50)
+     * @ORM\Column(name="password", type="string", length=100)
      */
     private $password;
 
@@ -94,6 +101,7 @@ class User
      *
      * @return int
      */
+
     public function getId()
     {
         return $this->id;
@@ -178,7 +186,7 @@ class User
      *
      * @return User
      */
-    public function setRole($role)
+    public function setRoles($role)
     {
         $this->role = $role;
 
@@ -190,7 +198,7 @@ class User
      *
      * @return string
      */
-    public function getRole()
+    public function getRoles()
     {
         return $this->role;
     }
@@ -365,5 +373,73 @@ class User
     public function getComments()
     {
         return $this->comments;
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function getSalt()
+    {
+
+        return null;
+    }
+
+    //logic for 'User'
+
+    public function createNewPost($name_post, $text_post, $actual_user)
+    {
+        $post = new Post();
+
+        $post->setNamePost($name_post);
+        $post->setTextPost($text_post);
+        $post->setDateCreatePost(new \DateTime('now'));
+        $post->setAuthorPost($this->getUsername());
+        $post->setUserPost($actual_user);
+
+        $this->addPost($post);
+
+    }
+
+    public function createNewComment($text_comment, $actual_user)
+    {
+        $comment = new Comment();
+
+        $comment->setAuthorComment($actual_user->getUsername());
+        $comment->setTextComment($text_comment);
+    }
+
+    public function userActivator()
+    {
+        $this->active = 1;
+    }
+
+    public function logout()
+    {
+        $this->apiKey = null;
+    }
+
+    /**
+     * Set role
+     *
+     * @param string $role
+     *
+     * @return User
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return string
+     */
+    public function getRole()
+    {
+        return $this->role;
     }
 }

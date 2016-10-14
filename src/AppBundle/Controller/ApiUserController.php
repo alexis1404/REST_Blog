@@ -7,49 +7,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use AppBundle\Entity\User;
 
 class ApiUserController extends Controller
 {
+
     /**
      * @Route("/api/get_all_users", name="get_all_users")
      * @Method("GET")
      */
     public function getAllUsersAction()
     {
-        $all_users = $this->getDoctrine()->getRepository('AppBundle:User')->findAll();
-
-        if(empty($all_users)){
-
-            throw new NotFoundHttpException;
-        }
-
-        $result = $this->get('user_manager')->returnManyUsers($all_users);
-
-        $response = new Response(json_encode($result));
-
-        return $response;
+        return new Response(json_encode($this->get('user_manager')->returnManyUsers()));
     }
 
     /**
-     * @Route("/api/get_user/{id}", name="get_user_id")
+     * @Route("/api/get_user/{id_user}", name="get_user_id")
      * @Method("GET")
      */
-    public function getUserAccordingId($id)
+    public function getUserAccordingIdAction($id_user)
     {
-        $actual_user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['id' => $id]);
-
-        if(empty($actual_user)){
-
-            throw new NotFoundHttpException;
-        }
-
-        $result = $this->get('user_manager')->returnOneUser($actual_user);
-
-        $response = new Response(json_encode($result));
-
-        return $response;
+        return new Response(json_encode(($this->get('user_manager')->returnOneUser($id_user))));
     }
 
     /**
@@ -58,18 +35,7 @@ class ApiUserController extends Controller
      */
     public function getUserPaginationAction($limit, $offset)
     {
-        $users = $this->getDoctrine()->getRepository('AppBundle:User')->getLimitOffsetUser($limit, $offset);
-
-        if(empty($users)){
-
-            throw new NotFoundHttpException;
-        }
-
-        $result = $this->get('user_manager')->returnManyUsers($users);
-
-        $response = new Response(json_encode($result));
-
-        return $response;
+        return new Response(json_encode($this->get('user_manager')->getLimitOffsetUsers($limit, $offset)));
     }
 
     /**
@@ -78,18 +44,7 @@ class ApiUserController extends Controller
      */
     public function deleteUserAction($id_user)
     {
-        $repo = $this->getDoctrine()->getRepository('AppBundle:User');
-
-        $actual_user = $repo->find($id_user);
-
-        if(empty($actual_user)){
-
-            throw new NotFoundHttpException;
-        }
-
-        $repo->removeObject($actual_user);
-
-        return new Response('User with ID '. $id_user .' deleted!');
+        return new Response(json_encode($this->get('user_manager')->userDelete($id_user)));
     }
 
     /**
@@ -114,23 +69,8 @@ class ApiUserController extends Controller
     public function createUserAbsoluteAction(Request $request)
     {
         $content = $request->getContent();
-        $user_data = json_decode($content, true);
 
-        if(empty($content)){
-
-            throw new \HttpRequestException;
-        }
-
-        $this->get('user_manager')->createNewSuperUser(
-            $user_data['username'],
-            $user_data['email'],
-            $user_data['active'], // 1 - user active, any other - user inactive (boolean value)
-            $user_data['role'],
-            $user_data['api_key'],
-            $user_data['password']
-        );
-
-        return  new Response('User create!', 200);
+        return  new Response($this->get('user_manager')->createNewSuperUser($content));
     }
 
 
@@ -155,20 +95,7 @@ class ApiUserController extends Controller
     {
         $content = $request->getContent();
 
-        $user_data = json_decode($content, true);
-
-        if(empty($content)){
-
-            throw new \HttpRequestException;
-        }
-
-        $this->get('user_manager')->createNewUser(
-            $user_data['username'],
-            $user_data['email'],
-            $user_data['password']
-        );
-
-        return  new Response('User create!', 200);
+        return  new Response($this->get('user_manager')->createNewUser($content));
     }
 
     /**
@@ -179,6 +106,79 @@ class ApiUserController extends Controller
     {
         $apikey = $request->query->get('apikey');
 
+        $this->get('user_manager')->userActivation($apikey);
 
+        return  new Response('User activate! Congratulation!', 200);
+    }
+
+    /**
+     * @Route("/api/edit_user/{id_user}", name="user_edit")
+     * @Method("PUT")
+     */
+
+    /*
+    Ожидает JSON-данные в таком виде:
+    {
+
+    "username": "Shurik",
+    "email": "shurik@gmail.com",
+    "active": 1,
+    "role": "ROLE_ADMIN",
+    "api_key": "ekll@#0)llrfdvll232323245fffd",
+    "password": "qwerty"
+
+}
+    Количество полей может быть произвольным (можно отправить, к примеру, только "username": "Shurik")
+    */
+    public function editUserAction($id_user, Request $request)
+    {
+        $content = $request->getContent();
+
+        $this->get('user_manager')->editUser($content, $id_user);
+
+        return  new Response('User ' . $id_user. ' successfully  changed!', 200);
+    }
+
+    /**
+     * @Route("/login", name="login_user")
+     * @Method("POST")
+     */
+
+    /*
+     * Ожидает данные в таком виде:
+     *
+     * {
+
+    "username": "Alexis",
+    "email": "luceatlux@gmail.com",
+    "password": "qwerty"
+
+}
+
+     *
+     * В случае успешной авторизации возвращает НОВЫЙ Api Key для юзера
+     */
+    public function userLoginAction(Request $request)
+    {
+        $content = $request->getContent();
+
+        return  new Response($this->get('user_manager')->userLogin($content));
+    }
+
+    /**
+     * @Route("/api/logout", name="out_user")
+     * @Method("GET")
+     */
+    public function logoutUserAction()
+    {
+        $actual_user = $this->getUser()->getUsername();
+
+        $actual_user->logout();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $em->flush();
+
+        return  new Response($actual_user->getUsername() . ' logout success!', 200);
     }
 }
