@@ -181,4 +181,22 @@ class ApiUserController extends Controller
 
         return  new Response($actual_user->getUsername() . ' logout success!', 200);
     }
+
+    /**
+     * @Route("/api/all_user_posts", name="all_user_posts")
+     * @Method("GET")
+     */
+    public function allUserPostsAction()
+    {
+        return new Response(json_encode($this->get('user_manager')->getAllUserPosts()));
+    }
+
+    /**
+     * @Route("/api/all_user_comments", name="all_user_comments")
+     * @Method("GET")
+     */
+    public function allUserCommentsAction()
+    {
+        return new Response(json_encode($this->get('user_manager')->getAllUserComments()));
+    }
 }

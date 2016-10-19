@@ -99,4 +99,13 @@ class ApiPostController extends Controller
 
         return new Response($this->get('post_manager')->editPost($content, $id_post));
     }
+
+    /**
+     * @Route("/api/all_comments_for_post/{id_post}", name="all_comments_post")
+     * @Method("GET")
+     */
+    public function allCommentsForPostAction($id_post)
+    {
+        return new Response(json_encode($this->get('post_manager')->getAllCommentsForThisPost($id_post)));
+    }
 }

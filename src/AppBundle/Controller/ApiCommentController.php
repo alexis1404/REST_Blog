@@ -16,7 +16,7 @@ class ApiCommentController extends Controller
      */
     public function getAllCommentsAction()
     {
-        return new Response(json_encode($this->get('comment_manager')->getAllComments()));
+        return new Response(json_encode($this->get('comment_manager')->getAllComments()), 200, ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -72,6 +72,17 @@ class ApiCommentController extends Controller
     /**
      * @Route("/api/edit_comment", name="edit_comment")
      * @Method("PUT")
+     */
+
+    /*
+     * Ожидает JSON-данные в таком формате:
+     *
+     * {
+
+    "id_comment": 1, - редактируемый комментарий
+    "text_comment": "Это отредактированный тестовый коментарий № 2", - текст комментария
+    "date_create_comment": "2016-11-11" - дата создания (можно в этом формате: "2016-11-11 11:20:22") 
+     }
      */
     public function editCommentAction(Request $request)
     {

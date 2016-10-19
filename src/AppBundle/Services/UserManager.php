@@ -317,4 +317,61 @@ class UserManager extends Controller
 
         return 'User with ID '. $id_user .' deleted!';
     }
+
+    public function getAllUserPosts()
+    {
+        $actual_user = $this->getUser()->getUsername();
+
+        $posts = $actual_user->getPosts();
+
+        if(empty($posts)){
+
+            throw new HttpException(204, 'Posts not found');
+        }
+
+        $result = array();
+        $row = 0;
+
+        foreach($posts as $value){
+
+            $result[$row]['id'] = $value->getId();
+            $result[$row]['author_post'] = $value->getAuthorPost();
+            $result[$row]['name_post'] = $value->getNamePost();
+            $result[$row]['picture_post'] = $value->getPicturePost();
+            $result[$row]['date_create_post'] = $value->getDateCreatePost();
+            $result[$row]['text_post'] = $value->getTextPost();
+            $result[$row]['id_author_post'] = $value->getUserPost()->getId();
+
+            $row++;
+        }
+
+        return $result;
+    }
+
+    public function getAllUserComments()
+    {
+        $actual_user = $this->getUser()->getUsername();
+
+        $comments = $actual_user->getComments();
+
+        if(empty($comments)){
+
+            throw new HttpException(204, 'Comments not found');
+        }
+
+        $result = array();
+        $row = 0;
+
+        foreach($comments as $value){
+
+            $result[$row]['id'] = $value->getId();
+            $result[$row]['author_comment'] = $value->getAuthorComment();
+            $result[$row]['text_comment'] = $value->getTextComment();
+            $result[$row]['date_create_comment'] = $value->getDateCreateComment();
+
+            $row++;
+        }
+
+        return $result;
+    }
 }

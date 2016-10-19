@@ -199,6 +199,33 @@ class PostManager extends Controller
         return 'Post edit successfully';
     }
 
+    public function getAllCommentsForThisPost($id_post)
+    {
+        $actual_post = $this->repo_post->find($id_post);
+
+        $comments = $actual_post->getPostComment();
+
+        if(empty($comments)){
+
+            throw new HttpException(204, 'Comments not found');
+        }
+
+        $result = array();
+        $row = 0;
+
+        foreach($comments as $value){
+
+            $result[$row]['id'] = $value->getId();
+            $result[$row]['author_comment'] = $value->getAuthorComment();
+            $result[$row]['text_comment'] = $value->getTextComment();
+            $result[$row]['date_create_comment'] = $value->getDateCreateComment();
+
+            $row++;
+        }
+
+        return $result;
+    }
+
     public function validator($object_validate)
     {
         $validator = $this->container->get('validator');
