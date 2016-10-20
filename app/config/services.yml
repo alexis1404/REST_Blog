@@ -19,6 +19,10 @@ services:
             class: AppBundle\Services\CommentManager
             arguments: ["@service_container"]
 
+    post_picture_uploader:
+            class: AppBundle\Services\Uploader
+            arguments: ["%post_picture_directory%"]
+
     my_mailer:
             class: AppBundle\Services\Mailer
             arguments: ["@service_container"]

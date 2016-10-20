@@ -57,7 +57,11 @@ class PostManager extends Controller
             $result[$row]['id'] = $value->getId();
             $result[$row]['author_post'] = $value->getAuthorPost();
             $result[$row]['name_post'] = $value->getNamePost();
-            $result[$row]['picture_post'] = $value->getPicturePost();
+            if($value->getPicturePost()) {
+                $result[$row]['picture_post'] = $_SERVER['HTTP_HOST'] . $value->getPicturePost();
+            }else{
+                $result[$row]['picture_post'] = NULL;
+            }
             $result[$row]['date_create_post'] = $value->getDateCreatePost();
             $result[$row]['text_post'] = $value->getTextPost();
             $result[$row]['id_author_post'] = $value->getUserPost()->getId();
@@ -82,7 +86,11 @@ class PostManager extends Controller
         $result['id'] = $post->getId();
         $result['author_post'] = $post->getAuthorPost();
         $result['name_post'] = $post->getNamePost();
-        $result['picture_post'] = $post->getPicturePost();
+        if($post->getPicturePost()) {
+            $result['picture_post'] = $_SERVER['HTTP_HOST'] . $post->getPicturePost();
+        }else{
+            $result['picture_post'] = NULL;
+        }
         $result['date_create_post'] = $post->getDateCreatePost();
         $result['text_post'] = $post->getTextPost();
         $result['id_author_post'] = $post->getUserPost()->getId();
@@ -107,7 +115,11 @@ class PostManager extends Controller
             $result[$row]['id'] = $value->getId();
             $result[$row]['author_post'] = $value->getAuthorPost();
             $result[$row]['name_post'] = $value->getNamePost();
-            $result[$row]['picture_post'] = $value->getPicturePost();
+            if($value->getPicturePost()) {
+                $result[$row]['picture_post'] = $_SERVER['HTTP_HOST'] . $value->getPicturePost();
+            }else{
+                $result[$row]['picture_post'] = NULL;
+            }
             $result[$row]['date_create_post'] = $value->getDateCreatePost();
             $result[$row]['text_post'] = $value->getTextPost();
             $result[$row]['id_author_post'] = $value->getUserPost()->getId();
@@ -121,6 +133,16 @@ class PostManager extends Controller
     public function postDelete($id_post)
     {
         $post = $this->repo_post->find($id_post);
+
+        if(empty($post)){
+
+            throw new HttpException(204, 'Post not found');
+        }
+
+        if($post->getPicturePost()){
+
+            unlink($post->getPicturePost());
+        }
 
         $id_post = $post->getId();
 
@@ -224,6 +246,21 @@ class PostManager extends Controller
         }
 
         return $result;
+    }
+
+    public function uploadPictureForPost($file, $id_post)
+    {
+        $actual_post = $this->repo_post->find($id_post);
+
+        $file_name = $this->get('post_picture_uploader')->Upload($file);
+
+        $picture_path = 'uploads/picture_for_posts/' . $file_name;
+
+        $actual_post->setPicturePost($picture_path);
+
+        $this->repo_post->saverObject($actual_post);
+
+        return $picture_path;
     }
 
     public function validator($object_validate)

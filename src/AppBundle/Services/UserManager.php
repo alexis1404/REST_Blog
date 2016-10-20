@@ -10,14 +10,17 @@ use AppBundle\Entity\User;
 
 class UserManager extends Controller
 {
+    private $repo_user;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->repo_user = $this->getDoctrine()->getRepository('AppBundle:User');
     }
 
     public function returnManyUsers()
     {
-        $all_users = $this->getDoctrine()->getRepository('AppBundle:User')->findAll();
+        $all_users = $this->repo_user->findAll();
 
         if(empty($all_users)){
 
@@ -36,7 +39,11 @@ class UserManager extends Controller
             $result[$row]['user_active'] = $value->getActive();
             $result[$row]['user_create_date'] = $value->getUserCreateDate();
             $result[$row]['user_api'] = $value->getApiKey();
-            $result[$row]['user_photo'] = $value->getPhoto();
+            if($value->getPhoto()) {
+                $result[$row]['user_photo'] = $_SERVER['HTTP_HOST'] . $value->getPhoto();
+            }else{
+                $result[$row]['user_photo'] = NULL;
+            }
 
             $row++;
         }
@@ -46,7 +53,7 @@ class UserManager extends Controller
 
     public function returnOneUser($id_user)
     {
-        $actual_user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(['id' => $id_user]);
+        $actual_user = $this->repo_user->findOneBy(['id' => $id_user]);
 
         if(empty($actual_user)){
 
@@ -62,7 +69,11 @@ class UserManager extends Controller
         $result['user_active'] = $actual_user->getActive();
         $result['user_create_date'] = $actual_user->getUserCreateDate();
         $result['user_api'] = $actual_user->getApiKey();
-        $result['user_photo'] = $actual_user->getPhoto();
+        if($actual_user->getPhoto()) {
+            $result['user_photo'] = $_SERVER['HTTP_HOST'] . $actual_user->getPhoto();
+        }else{
+            $result['user_photo'] = NULL;
+        }
 
         return $result;
     }
@@ -108,7 +119,7 @@ class UserManager extends Controller
 
         $this->validator($user);
 
-        $this->getDoctrine()->getRepository('AppBundle:User')->saverObject($user);
+        $this->repo_user->saverObject($user);
 
         return 'User create!';
     }
@@ -135,7 +146,7 @@ class UserManager extends Controller
 
         $this->validator($user);
 
-        $this->getDoctrine()->getRepository('AppBundle:User')->saverObject($user);
+        $this->repo_user->saverObject($user);
 
         $heading = 'Hi, friend!';
         $from = 'grandShushpanchik@gmail.com';
@@ -149,13 +160,12 @@ class UserManager extends Controller
 
     public function userActivation($apiKey)
     {
-        $repo = $this->getDoctrine()->getRepository('AppBundle:User');
 
-        $actual_user = $repo->findOneBy(['apiKey' => $apiKey]);
+        $actual_user = $this->repo_user->findOneBy(['apiKey' => $apiKey]);
 
         $actual_user->userActivator();
 
-        $repo->saverObject($actual_user);
+        $this->repo_user->saverObject($actual_user);
     }
 
     public function editUser($content, $user_id)
@@ -199,9 +209,7 @@ class UserManager extends Controller
             $password = $user_data['password'];
         }
 
-        $repo = $this->getDoctrine()->getRepository('AppBundle:User');
-
-        $actual_user = $repo->find($user_id);
+        $actual_user = $this->repo_user->find($user_id);
 
         if($username) {
 
@@ -235,7 +243,7 @@ class UserManager extends Controller
 
             $this->validator($actual_user);
 
-            $repo->saverObject($actual_user);
+            $this->repo_user->saverObject($actual_user);
         }
 
     public function userLogin($content)
@@ -247,9 +255,7 @@ class UserManager extends Controller
             throw new HttpException(400, 'Bad request!');
         }
 
-        $repo = $this->getDoctrine()->getRepository('AppBundle:User');
-
-        $actual_user = $repo->findOneBy(['username' => $user_data['username'], 'email' => $user_data['email']]);
+        $actual_user = $this->repo_user->findOneBy(['username' => $user_data['username'], 'email' => $user_data['email']]);
 
         if(empty($actual_user)){
 
@@ -262,7 +268,7 @@ class UserManager extends Controller
 
             $actual_user->setApiKey($new_apiKey);
 
-            $repo->saverObject($actual_user);
+            $this->repo_user->saverObject($actual_user);
 
             return $new_apiKey;
 
@@ -275,7 +281,7 @@ class UserManager extends Controller
 
     public function getLimitOffsetUsers($limit, $offset)
     {
-        $users = $this->getDoctrine()->getRepository('AppBundle:User')->getLimitOffsetUser($limit, $offset);
+        $users = $this->repo_user->getLimitOffsetUser($limit, $offset);
 
         if(empty($users)){
 
@@ -290,11 +296,15 @@ class UserManager extends Controller
             $result[$row]['id'] = $value->getId();
             $result[$row]['user_name'] = $value->getUsername();
             $result[$row]['user_mail'] = $value->getEmail();
-            $result[$row]['user_role'] = $value->getRoles();
+            $result[$row]['user_role'] = $value-> getRoles();
             $result[$row]['user_active'] = $value->getActive();
             $result[$row]['user_create_date'] = $value->getUserCreateDate();
             $result[$row]['user_api'] = $value->getApiKey();
-            $result[$row]['user_photo'] = $value->getPhoto();
+            if($value->getPhoto()) {
+                $result[$row]['user_photo'] = $_SERVER['HTTP_HOST'] . $value->getPhoto();
+            }else{
+                $result[$row]['user_photo'] = NULL;
+            }
 
             $row++;
         }
@@ -304,16 +314,20 @@ class UserManager extends Controller
 
     public function userDelete($id_user)
     {
-        $repo = $this->getDoctrine()->getRepository('AppBundle:User');
 
-        $actual_user = $repo->find($id_user);
+        $actual_user = $this->repo_user->find($id_user);
 
         if(empty($actual_user)){
 
             throw new HttpException(204, 'Users not found');
         }
 
-        $repo->removeObject($actual_user);
+        if($actual_user->getPhoto()){
+
+            unlink($actual_user->getPhoto());
+        }
+
+        $this->repo_user->removeObject($actual_user);
 
         return 'User with ID '. $id_user .' deleted!';
     }
@@ -337,7 +351,11 @@ class UserManager extends Controller
             $result[$row]['id'] = $value->getId();
             $result[$row]['author_post'] = $value->getAuthorPost();
             $result[$row]['name_post'] = $value->getNamePost();
-            $result[$row]['picture_post'] = $value->getPicturePost();
+            if($value->getPicturePost()) {
+                $result[$row]['picture_post'] = $_SERVER['HTTP_HOST'] . $value->getPicturePost();
+            }else{
+                $result[$row]['picture_post'] = NULL;
+            }
             $result[$row]['date_create_post'] = $value->getDateCreatePost();
             $result[$row]['text_post'] = $value->getTextPost();
             $result[$row]['id_author_post'] = $value->getUserPost()->getId();

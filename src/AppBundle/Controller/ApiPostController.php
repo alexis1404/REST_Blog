@@ -108,4 +108,15 @@ class ApiPostController extends Controller
     {
         return new Response(json_encode($this->get('post_manager')->getAllCommentsForThisPost($id_post)));
     }
+
+    /**
+     * @Route("/api/upload_post_image/{id_post}", name="upload_post_image")
+     * @Method("POST")
+     */
+    public function uploadPictureForPostAction(Request $request, $id_post)
+    {
+        $file = $request->files->get('image_post');
+
+        return new Response($this->get('post_manager')->uploadPictureForPost($file, $id_post));
+    }
 }
