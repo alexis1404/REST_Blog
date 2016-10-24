@@ -199,4 +199,19 @@ class ApiUserController extends Controller
     {
         return new Response(json_encode($this->get('user_manager')->getAllUserComments()));
     }
+
+    /**
+     * @Route("/api/upload_avatar/{id_user}", name="upload_avatar")
+     * @Method("POST")
+     */
+    /*
+     * Загружает аватарку для юзера. Если у юзера уже есть аватар
+     * он будет заменен на новый, а старый файл будет удален.
+     */
+    public function uploadAvatarAction(Request $request, $id_user)
+    {
+        $file = $request->files->get('user_avatar');
+
+        return new Response($this->get('user_manager')->avatarUploader($file, $id_user));
+    }
 }

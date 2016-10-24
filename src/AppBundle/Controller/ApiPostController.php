@@ -113,6 +113,10 @@ class ApiPostController extends Controller
      * @Route("/api/upload_post_image/{id_post}", name="upload_post_image")
      * @Method("POST")
      */
+    /*
+     * Загружает сопроводительное изображение для поста. Если таковое
+     * уже имеется, оно будет заменено на новое, а старая картинка будет удалена.
+     */
     public function uploadPictureForPostAction(Request $request, $id_post)
     {
         $file = $request->files->get('image_post');

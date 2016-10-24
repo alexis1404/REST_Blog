@@ -225,6 +225,11 @@ class PostManager extends Controller
     {
         $actual_post = $this->repo_post->find($id_post);
 
+        if(empty($actual_post)){
+
+            throw new HttpException(204, 'Post not found');
+        }
+
         $comments = $actual_post->getPostComment();
 
         if(empty($comments)){
@@ -251,6 +256,20 @@ class PostManager extends Controller
     public function uploadPictureForPost($file, $id_post)
     {
         $actual_post = $this->repo_post->find($id_post);
+
+        if(empty($actual_post)){
+
+            throw new HttpException(204, 'Post not found');
+        }
+
+        if($actual_post->getPicturePost()){
+
+            unlink($actual_post->getPicturePost());
+
+            $actual_post->setPicturePost(NULL);
+
+            $this->repo_post->saverObject($actual_post);
+        }
 
         $file_name = $this->get('post_picture_uploader')->Upload($file);
 

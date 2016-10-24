@@ -392,4 +392,33 @@ class UserManager extends Controller
 
         return $result;
     }
+
+    public function avatarUploader($file, $id_user)
+    {
+        $actual_user = $this->repo_user->find($id_user);
+
+        if(empty($actual_user)){
+
+            throw new HttpException(204, 'User not found');
+        }
+
+        if($actual_user->getPhoto()){
+
+            unlink($actual_user->getPhoto());
+
+            $actual_user->setPhoto(NULL);
+
+            $this->repo_user->saverObject($actual_user);
+        }
+
+        $file_name = $this->get('user_avatar_uploader')->Upload($file);
+
+        $avatar_path = 'uploads/avatars_for_users/' . $file_name;
+
+        $actual_user->setPhoto($avatar_path);
+
+        $this->repo_user->saverObject($actual_user);
+
+        return $avatar_path;
+    }
 }
