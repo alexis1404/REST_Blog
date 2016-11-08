@@ -97,6 +97,11 @@ class User implements UserInterface
     private $comments;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserGallery", mappedBy="owner_images", cascade={"persist", "remove"})
+     */
+    private $images;
+
+    /**
      * Get id
      *
      * @return int
@@ -305,6 +310,7 @@ class User implements UserInterface
     {
         $this->posts = new \Doctrine\Common\Collections\ArrayCollection();
         $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->images = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -401,12 +407,19 @@ class User implements UserInterface
 
     }
 
-    public function createNewComment($text_comment, $actual_user)
+    public function createNewComment($text_comment, $actual_user, $actual_post)
     {
         $comment = new Comment();
 
-        $comment->setAuthorComment($actual_user->getUsername());
+        $comment->setAuthorComment($this->getUsername());
         $comment->setTextComment($text_comment);
+        $comment->setDateCreateComment(new \DateTime('now'));
+        $comment->setPostComment($actual_post);
+        $comment->setUserComment($actual_user);
+
+        $this->addComment($comment);
+
+        return $comment;
     }
 
     public function userActivator()

@@ -214,4 +214,37 @@ class ApiUserController extends Controller
 
         return new Response($this->get('user_manager')->avatarUploader($file, $id_user));
     }
+
+    /**
+     * @Route("/api/upload_gallery/{id_user}", name="upload_images")
+     * @Method("POST")
+     */
+    /*
+     * Загружает файлы в галлерею юзера (мультизагрузка поддерживается)
+     */
+    public function uploadToGalleryUserAction(Request $request, $id_user)
+    {
+        $file = $request->files->get('user_images');
+
+        return new Response($this->get('user_manager')->UsersImagesUpload($file, $id_user));
+    }
+
+    /**
+     * @Route("/api/get_all_users_images/{id_user}", name="all_user_images")
+     * @Method("GET")
+     */
+    public function getAllUsersImages($id_user)
+    {
+        return new Response(json_encode($this->get('user_manager')->getAllUsersImages($id_user)));
+    }
+
+    /**
+     * @Route("/api/delete_image/{id_image}", name="delete_image")
+     * @Method("GET")
+     */
+    public function deleteImageFromGallery($id_image)
+    {
+        return new Response($this->get('user_manager')->deleteImageFromGallery($id_image));
+    }
+
 }

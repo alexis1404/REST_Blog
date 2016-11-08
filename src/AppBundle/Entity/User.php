@@ -97,6 +97,11 @@ class User implements UserInterface
     private $comments;
 
     /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserGallery", mappedBy="owner_images", cascade={"persist", "remove"})
+     */
+    private $images;
+
+    /**
      * Get id
      *
      * @return int
@@ -305,6 +310,7 @@ class User implements UserInterface
     {
         $this->posts = new \Doctrine\Common\Collections\ArrayCollection();
         $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->images = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -448,5 +454,39 @@ class User implements UserInterface
     public function getRole()
     {
         return $this->role;
+    }
+
+    /**
+     * Add image
+     *
+     * @param \AppBundle\Entity\UserGallery $image
+     *
+     * @return User
+     */
+    public function addImage(\AppBundle\Entity\UserGallery $image)
+    {
+        $this->images[] = $image;
+
+        return $this;
+    }
+
+    /**
+     * Remove image
+     *
+     * @param \AppBundle\Entity\UserGallery $image
+     */
+    public function removeImage(\AppBundle\Entity\UserGallery $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    /**
+     * Get images
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getImages()
+    {
+        return $this->images;
     }
 }

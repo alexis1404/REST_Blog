@@ -27,6 +27,10 @@ services:
             class: AppBundle\Services\Uploader
             arguments: ["%avatar_for_user%"]
 
+    user_gallery_uploader:
+           class: AppBundle\Services\Uploader
+           arguments: ["%users_gallery%"]
+
     my_mailer:
             class: AppBundle\Services\Mailer
             arguments: ["@service_container"]

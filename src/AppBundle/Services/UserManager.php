@@ -7,15 +7,18 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use AppBundle\Entity\User;
+use AppBundle\Entity\UserGallery;
 
 class UserManager extends Controller
 {
     private $repo_user;
+    private $repo_gallery;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->repo_user = $this->getDoctrine()->getRepository('AppBundle:User');
+        $this->repo_gallery = $this->getDoctrine()->getRepository('AppBundle:UserGallery');
     }
 
     public function returnManyUsers()
@@ -420,5 +423,82 @@ class UserManager extends Controller
         $this->repo_user->saverObject($actual_user);
 
         return $avatar_path;
+    }
+
+    public function UsersImagesUpload($file, $id_user)
+    {
+        $actual_user = $this->repo_user->find($id_user);
+
+        if(empty($actual_user)){
+
+            throw new HttpException(204, 'User not found');
+        }
+
+        foreach ($file as $value){
+
+            $user_gallery = new UserGallery();
+
+            $file_name = $this->get('user_gallery_uploader')->Upload($value);
+
+            $file_path = 'uploads/users_gallery/' . $file_name;
+
+            $user_gallery->setImageName($value->getClientOriginalName());
+
+            $user_gallery->setImagePath($file_path);
+
+            $user_gallery->setOwnerImages($actual_user);
+
+            $this->repo_gallery->saverObject($user_gallery);
+        }
+
+        return 'Files uploaded!';
+
+    }
+
+    public function getAllUsersImages($id_user)
+    {
+        $actual_user = $this->repo_user->find($id_user);
+
+        if(empty($actual_user)){
+
+            throw new HttpException(204, 'User not found');
+        }
+
+        $links_images = $actual_user->getImages();
+
+        if(empty($links_images)){
+
+            throw new HttpException(204, 'No pictures in gallery');
+        }
+
+        $result = array();
+        $row = 0;
+
+        foreach ($links_images as $value ) {
+
+            $result[$row]['name_picture'] = $value->getImageName();
+            $result[$row]['link_picture'] = $value->getImagePath();
+
+            $row++;
+        }
+
+        return $result;
+    }
+
+    public function deleteImageFromGallery($id_image)
+    {
+        $actual_image = $this->repo_gallery->find($id_image);
+
+        if(empty($actual_image)){
+
+            throw new HttpException(204, 'Image not found');
+        }
+
+        unlink($actual_image->getImagePath());
+
+        $this->repo_gallery->removeObject($actual_image);
+
+        return 'Image deleted';
+
     }
 }

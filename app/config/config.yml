@@ -9,6 +9,7 @@ parameters:
     locale: en
     post_picture_directory: '%kernel.root_dir%/../web/uploads/picture_for_posts'
     avatar_for_user: '%kernel.root_dir%/../web/uploads/avatars_for_users'
+    users_gallery: '%kernel.root_dir%/../web/uploads/users_gallery'
 
 framework:
     #esi:             ~

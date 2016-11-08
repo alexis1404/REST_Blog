@@ -159,4 +159,28 @@ class Comment
     {
         return $this->post_comment;
     }
+
+    /**
+     * Set dateCreateComment
+     *
+     * @param \DateTime $dateCreateComment
+     *
+     * @return Comment
+     */
+    public function setDateCreateComment($dateCreateComment)
+    {
+        $this->date_create_comment = $dateCreateComment;
+
+        return $this;
+    }
+
+    /**
+     * Get dateCreateComment
+     *
+     * @return \DateTime
+     */
+    public function getDateCreateComment()
+    {
+        return $this->date_create_comment;
+    }
 }
