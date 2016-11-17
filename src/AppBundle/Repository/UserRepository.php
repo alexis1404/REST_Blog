@@ -27,11 +27,12 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
     public function getLimitOffsetUser($limit, $offset)
     {
 
-        $query = $this->createQueryBuilder('p')
+        $query = $this->createQueryBuilder('user_repository')
             ->setMaxResults($limit)
             ->setFirstResult($offset)
             ->getQuery();
 
         return $query->getResult();
     }
+
 }

@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -17,7 +18,7 @@ class ApiUserController extends Controller
      */
     public function getAllUsersAction()
     {
-        return new Response(json_encode($this->get('user_manager')->returnManyUsers()));
+        return new JsonResponse($this->get('user_manager')->returnManyUsers());
     }
 
     /**
@@ -26,7 +27,7 @@ class ApiUserController extends Controller
      */
     public function getUserAccordingIdAction($id_user)
     {
-        return new Response(json_encode(($this->get('user_manager')->returnOneUser($id_user))));
+        return new JsonResponse($this->get('user_manager')->returnOneUser($id_user));
     }
 
     /**
@@ -35,7 +36,7 @@ class ApiUserController extends Controller
      */
     public function getUserPaginationAction($limit, $offset)
     {
-        return new Response(json_encode($this->get('user_manager')->getLimitOffsetUsers($limit, $offset)));
+        return new JsonResponse($this->get('user_manager')->getLimitOffsetUsers($limit, $offset));
     }
 
     /**
@@ -44,7 +45,7 @@ class ApiUserController extends Controller
      */
     public function deleteUserAction($id_user)
     {
-        return new Response(json_encode($this->get('user_manager')->userDelete($id_user)));
+        return new JsonResponse($this->get('user_manager')->userDelete($id_user));
     }
 
     /**
@@ -70,7 +71,7 @@ class ApiUserController extends Controller
     {
         $content = $request->getContent();
 
-        return  new Response($this->get('user_manager')->createNewSuperUser($content));
+        return  new JsonResponse($this->get('user_manager')->createNewSuperUser($content));
     }
 
 
@@ -95,7 +96,7 @@ class ApiUserController extends Controller
     {
         $content = $request->getContent();
 
-        return  new Response($this->get('user_manager')->createNewUser($content));
+        return  new JsonResponse($this->get('user_manager')->createNewUser($content));
     }
 
     /**
@@ -108,7 +109,7 @@ class ApiUserController extends Controller
 
         $this->get('user_manager')->userActivation($apikey);
 
-        return  new Response('User activate! Congratulation!', 200);
+        return  new JsonResponse('User activate! Congratulation!', 200);
     }
 
     /**
@@ -136,7 +137,7 @@ class ApiUserController extends Controller
 
         $this->get('user_manager')->editUser($content, $id_user);
 
-        return  new Response('User ' . $id_user. ' successfully  changed!', 200);
+        return  new JsonResponse('User ' . $id_user. ' successfully  changed!', 200);
     }
 
     /**
@@ -162,7 +163,7 @@ class ApiUserController extends Controller
     {
         $content = $request->getContent();
 
-        return  new Response($this->get('user_manager')->userLogin($content));
+        return  new JsonResponse($this->get('user_manager')->userLogin($content));
     }
 
     /**
@@ -179,7 +180,7 @@ class ApiUserController extends Controller
 
         $em->flush();
 
-        return  new Response($actual_user->getUsername() . ' logout success!', 200);
+        return  new JsonResponse($actual_user->getUsername() . ' logout success!', 200);
     }
 
     /**
@@ -188,7 +189,7 @@ class ApiUserController extends Controller
      */
     public function allUserPostsAction()
     {
-        return new Response(json_encode($this->get('user_manager')->getAllUserPosts()));
+        return new JsonResponse($this->get('user_manager')->getAllUserPosts());
     }
 
     /**
@@ -197,7 +198,7 @@ class ApiUserController extends Controller
      */
     public function allUserCommentsAction()
     {
-        return new Response(json_encode($this->get('user_manager')->getAllUserComments()));
+        return new JsonResponse($this->get('user_manager')->getAllUserComments());
     }
 
     /**
@@ -212,7 +213,7 @@ class ApiUserController extends Controller
     {
         $file = $request->files->get('user_avatar');
 
-        return new Response($this->get('user_manager')->avatarUploader($file, $id_user));
+        return new JsonResponse($this->get('user_manager')->avatarUploader($file, $id_user));
     }
 
     /**
@@ -226,7 +227,7 @@ class ApiUserController extends Controller
     {
         $file = $request->files->get('user_images');
 
-        return new Response($this->get('user_manager')->UsersImagesUpload($file, $id_user));
+        return new JsonResponse($this->get('user_manager')->UsersImagesUpload($file, $id_user));
     }
 
     /**
@@ -235,7 +236,7 @@ class ApiUserController extends Controller
      */
     public function getAllUsersImages($id_user)
     {
-        return new Response(json_encode($this->get('user_manager')->getAllUsersImages($id_user)));
+        return new JsonResponse($this->get('user_manager')->getAllUsersImages($id_user));
     }
 
     /**
@@ -244,7 +245,8 @@ class ApiUserController extends Controller
      */
     public function deleteImageFromGallery($id_image)
     {
-        return new Response($this->get('user_manager')->deleteImageFromGallery($id_image));
+        return new JsonResponse($this->get('user_manager')->deleteImageFromGallery($id_image));
     }
+
 
 }

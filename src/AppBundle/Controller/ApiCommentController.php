@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -16,7 +17,7 @@ class ApiCommentController extends Controller
      */
     public function getAllCommentsAction()
     {
-        return new Response(json_encode($this->get('comment_manager')->getAllComments()), 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($this->get('comment_manager')->getAllComments());
     }
 
     /**
@@ -25,7 +26,7 @@ class ApiCommentController extends Controller
      */
     public function getCommentAccordingIdAction($id_comment)
     {
-        return new Response(json_encode($this->get('comment_manager')->getCommentAccordingId($id_comment)));
+        return new JsonResponse($this->get('comment_manager')->getCommentAccordingId($id_comment));
     }
 
     /**
@@ -34,7 +35,7 @@ class ApiCommentController extends Controller
      */
     public function getCommentPaginationAction($limit, $offset)
     {
-        return new Response(json_encode($this->get('comment_manager')->getCommentsLimitOffset($limit, $offset)));
+        return new JsonResponse($this->get('comment_manager')->getCommentsLimitOffset($limit, $offset));
     }
 
     /**
@@ -43,7 +44,7 @@ class ApiCommentController extends Controller
      */
     public function deleteCommentAction($id_comment)
     {
-        return new Response($this->get('comment_manager')->deleteComment($id_comment));
+        return new JsonResponse($this->get('comment_manager')->deleteComment($id_comment));
     }
 
     /**
@@ -66,7 +67,7 @@ class ApiCommentController extends Controller
     {
         $content = $request->getContent();
 
-        return new Response($this->get('comment_manager')->createComment($content));
+        return new JsonResponse($this->get('comment_manager')->createComment($content));
     }
 
     /**
@@ -88,6 +89,6 @@ class ApiCommentController extends Controller
     {
         $content = $request->getContent();
 
-        return new Response($this->get('comment_manager')->editComment($content));
+        return new JsonResponse($this->get('comment_manager')->editComment($content));
     }
 }

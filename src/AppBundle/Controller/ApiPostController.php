@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -16,7 +17,7 @@ class ApiPostController extends Controller
      */
     public function returnAllPostsAction()
     {
-        return new Response(json_encode($this->get('post_manager')->allPostReturn()));
+        return new JsonResponse($this->get('post_manager')->allPostReturn());
     }
 
     /**
@@ -25,7 +26,7 @@ class ApiPostController extends Controller
      */
     public function getPostAccordingIdAction($id_post)
     {
-        return new Response(json_encode($this->get('post_manager')->onePostReturn($id_post)));
+        return new JsonResponse($this->get('post_manager')->onePostReturn($id_post));
     }
 
     /**
@@ -34,7 +35,7 @@ class ApiPostController extends Controller
      */
     public function getPostsPaginationAction($limit, $offset)
     {
-        return new Response(json_encode($this->get('post_manager')->postLimitOffset($limit, $offset)));
+        return new JsonResponse($this->get('post_manager')->postLimitOffset($limit, $offset));
     }
 
     /**
@@ -43,7 +44,7 @@ class ApiPostController extends Controller
      */
     public function deletePostAction($id_post)
     {
-        return new Response(json_encode($this->get('post_manager')->postDelete($id_post)));
+        return new JsonResponse($this->get('post_manager')->postDelete($id_post));
     }
 
     /**
@@ -67,7 +68,7 @@ class ApiPostController extends Controller
     {
         $content = $request->getContent();
 
-        return new Response($this->get('post_manager')->createNewPost($content));
+        return new JsonResponse($this->get('post_manager')->createNewPost($content));
     }
 
     /**
@@ -97,7 +98,7 @@ class ApiPostController extends Controller
     {
         $content = $request->getContent();
 
-        return new Response($this->get('post_manager')->editPost($content, $id_post));
+        return new JsonResponse($this->get('post_manager')->editPost($content, $id_post));
     }
 
     /**
@@ -106,7 +107,7 @@ class ApiPostController extends Controller
      */
     public function allCommentsForPostAction($id_post)
     {
-        return new Response(json_encode($this->get('post_manager')->getAllCommentsForThisPost($id_post)));
+        return new JsonResponse($this->get('post_manager')->getAllCommentsForThisPost($id_post));
     }
 
     /**
@@ -121,6 +122,6 @@ class ApiPostController extends Controller
     {
         $file = $request->files->get('image_post');
 
-        return new Response($this->get('post_manager')->uploadPictureForPost($file, $id_post));
+        return new JsonResponse($this->get('post_manager')->uploadPictureForPost($file, $id_post));
     }
 }
